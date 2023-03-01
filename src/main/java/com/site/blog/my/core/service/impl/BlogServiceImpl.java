@@ -194,7 +194,7 @@ public class BlogServiceImpl implements BlogService {
         params.put("page", page);
         //每页8条
         params.put("limit", 8);
-        params.put("blogStatus", 1);//过滤发布状态下的数据
+        params.put("blogStatus", 1);//过滤发布状态下的数据 TODO 这个参数什么用？
         PageQueryUtil pageUtil = new PageQueryUtil(params);
         List<Blog> blogList = blogMapper.findBlogList(pageUtil);
         List<BlogListVO> blogListVOS = getBlogListVOsByBlogs(blogList);

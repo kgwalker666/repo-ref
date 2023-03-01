@@ -64,4 +64,43 @@ Vagrant.configure("2") do |config|
     # 用户vagrant加入docker组
     gpasswd -a vagrant docker
   SHELL
+
+  # 配置docker镜像源
+  config.vm.provision "docker-mirror", type: "shell", inline: <<-SHELL
+    if [ -n "#{ENV['SECRET']}" ]; then
+        # 创建目录
+        mkdir -p /etc/docker
+        # 获取镜像地址
+        curl -fsSL https://www.kgwalker.com/secret/docker/dockerhub-mirrors.json -u #{ENV['SECRET']} -o /etc/docker/daemon.json
+        # 重启docker
+        systemctl restart docker
+        # 提示
+        echo '已配置dockerhub国内镜像源'
+    else
+        echo '您没有权限访问博主私有的国内镜像源'
+    fi
+  SHELL
+
+  # 配置mysql
+  config.vm.provision "docker-mysql", type: "shell", inline: <<-SHELL
+    # 拉取
+    docker pull mysql:8.0.26
+    # 创建目录
+    mkdir -p /home/vagrant/mysql/data /home/vagrant/mysql/conf
+    # 获取配置
+    curl -fsSL https://www.kgwalker.com/public/mysql/my.cnf -o /home/vagrant/mysql/conf/my.cnf
+    # 转让权限
+    chown -R vagrant:vagrant /home/vagrant/mysql
+    # 启动容器
+    docker run --name mysql \
+        -u `id -u vagrant`:`id -g vagrant` \
+        -p 3306:3306 \
+        -e TZ=Asia/Shanghai \
+        -e MYSQL_ROOT_PASSWORD=123456 \
+        -e MYSQL_INITDB_SKIP_TZINFO=1 \
+        -v /home/vagrant/mysql/conf:/etc/mysql/conf.d \
+        -v /home/vagrant/mysql/data:/var/lib/mysql \
+        --restart=unless-stopped \
+        -d mysql:8.0.26
+  SHELL
 end

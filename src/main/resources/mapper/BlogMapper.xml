@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.site.blog.my.core.dao.BlogMapper">
+
+    <!--blog的java字段与mysql自定映射关系-->
     <resultMap id="BaseResultMap" type="com.site.blog.my.core.entity.Blog">
         <id column="blog_id" jdbcType="BIGINT" property="blogId"/>
         <result column="blog_title" jdbcType="VARCHAR" property="blogTitle"/>
@@ -16,6 +18,7 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
+
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.site.blog.my.core.entity.Blog">
         <result column="blog_content" jdbcType="LONGVARCHAR" property="blogContent"/>
     </resultMap>
@@ -34,6 +37,8 @@
         from tb_blog
         where blog_id = #{blogId,jdbcType=BIGINT} and is_deleted = 0
     </select>
+
+    <!--通过分页信息查询blog文章-->
     <select id="findBlogList" parameterType="Map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -48,7 +48,7 @@ public class MyBlogController {
      */
     @GetMapping({"/", "/index", "index.html"})
     public String index(HttpServletRequest request) {
-        return this.page(request, 1);
+        return this.page(request, 1);       // 访问首页通过分页查询查询第一页数据；原来controller可以相互调用呀！
     }
 
     /**
